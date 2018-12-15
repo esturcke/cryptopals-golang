@@ -11,4 +11,5 @@ type Challenge struct {
 var Challenges = []Challenge{
 	{1, solve1, "SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t"},
 	{2, solve2, "746865206b696420646f6e277420706c6179"},
+	{3, solve3, "Cooking MC's like a pound of bacon"},
 }
