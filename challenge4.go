@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"os"
 
+	"github.com/esturcke/cryptopals-golang/bytes"
 	"github.com/esturcke/cryptopals-golang/english"
 )
 
@@ -41,7 +42,7 @@ func decodeByteXor(ct []byte) (float64, string) {
 		for i := range ct {
 			key[i] = byte(b)
 		}
-		guess := xor(ct, key)
+		guess := bytes.Xor(ct, key)
 		score := english.LikeEnglish(guess)
 		if score > topScore {
 			pt = guess

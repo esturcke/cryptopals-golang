@@ -1,5 +1,7 @@
 package cryptopals
 
+import "github.com/esturcke/cryptopals-golang/bytes"
+
 /*
 
 # Fixed XOR
@@ -26,19 +28,8 @@ If your function works properly, then when you feed it the string:
 
 */
 func solve2() string {
-	return toHex(xor(
+	return toHex(bytes.Xor(
 		fromHex("1c0111001f010100061a024b53535009181c"),
 		fromHex("686974207468652062756c6c277320657965"),
 	))
-}
-
-func xor(a []byte, b []byte) []byte {
-	if len(a) != len(b) {
-		panic("xor only works on equal length byte slices")
-	}
-	c := make([]byte, len(a))
-	for i := range a {
-		c[i] = a[i] ^ b[i]
-	}
-	return c
 }
