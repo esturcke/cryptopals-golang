@@ -5,7 +5,7 @@ import (
 	"github.com/esturcke/cryptopals-golang/io"
 )
 
-/*
+/*Solve challenge 8
 
 Detect AES in ECB mode
 
