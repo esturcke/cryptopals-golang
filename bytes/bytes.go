@@ -82,3 +82,21 @@ func CycledSplit(data []byte, n int) [][]byte {
 	}
 	return rows
 }
+
+// Pad adds padding returning a new slice
+func Pad(data []byte, padding byte, blockSize int) []byte {
+	n := blockSize - len(data)%blockSize
+	padded := make([]byte, len(data)+n)
+	for i, c := range data {
+		padded[i] = c
+	}
+	for i := len(data); i < len(padded); i++ {
+		padded[i] = padding
+	}
+	return padded
+}
+
+// PadPkcs7 adds PKCS#7 padding
+func PadPkcs7(data []byte, blockSize int) []byte {
+	return Pad(data, byte(4), blockSize)
+}
