@@ -1,6 +1,9 @@
 package bytes
 
-import "encoding/base64"
+import (
+	"encoding/base64"
+	"encoding/hex"
+)
 
 // BitCount returns the count of bits in the byte slice
 func BitCount(bytes []byte) (count int) {
@@ -43,6 +46,29 @@ func FromBase64(s string) []byte {
 		panic(err)
 	}
 	return data
+}
+
+// ToBase64 encodes bytes as base 64 string
+func ToBase64(data []byte) string {
+	return base64.StdEncoding.EncodeToString(data)
+}
+
+// FromHex decodes a hex string to bytes
+func FromHex(s string) []byte {
+	data, err := hex.DecodeString(s)
+	if err != nil {
+		panic(err)
+	}
+	return data
+}
+
+// ToHex encodes bytes to a hex string
+func ToHex(data []byte) string {
+	return hex.EncodeToString(data)
+}
+
+func toBase64(data []byte) string {
+	return base64.StdEncoding.EncodeToString(data)
 }
 
 // CycledSplit splits the bytes into

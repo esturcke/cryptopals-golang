@@ -1,5 +1,7 @@
 package cryptopals
 
+import "github.com/esturcke/cryptopals-golang/bytes"
+
 /*
 
 # Implement repeating-key XOR
@@ -28,7 +30,7 @@ Encrypt a bunch of stuff using your repeating-key XOR function. Encrypt your mai
 func solve5() string {
 	pt := "Burning 'em, if you ain't quick and nimble\nI go crazy when I hear a cymbal"
 	key := "ICE"
-	return toHex(encryptXor([]byte(pt), []byte(key)))
+	return bytes.ToHex(encryptXor([]byte(pt), []byte(key)))
 }
 
 func encryptXor(pt []byte, key []byte) []byte {

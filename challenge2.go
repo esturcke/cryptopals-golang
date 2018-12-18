@@ -28,8 +28,8 @@ If your function works properly, then when you feed it the string:
 
 */
 func solve2() string {
-	return toHex(bytes.Xor(
-		fromHex("1c0111001f010100061a024b53535009181c"),
-		fromHex("686974207468652062756c6c277320657965"),
+	return bytes.ToHex(bytes.Xor(
+		bytes.FromHex("1c0111001f010100061a024b53535009181c"),
+		bytes.FromHex("686974207468652062756c6c277320657965"),
 	))
 }

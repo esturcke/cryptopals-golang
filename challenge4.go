@@ -62,7 +62,7 @@ func getCts() [][]byte {
 	scanner := bufio.NewScanner(file)
 	var cts [][]byte
 	for scanner.Scan() {
-		cts = append(cts, fromHex(scanner.Text()))
+		cts = append(cts, bytes.FromHex(scanner.Text()))
 	}
 
 	if err := scanner.Err(); err != nil {
