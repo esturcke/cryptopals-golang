@@ -35,6 +35,5 @@ func solve7() string {
 		block.Decrypt(pt[i:i+16], ct[i:i+16])
 	}
 
-	// Removing the last 4 EOT characters :(
-	return string(pt[:len(pt)-4])
+	return string(bytes.StripPkcs7(pt))
 }

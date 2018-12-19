@@ -67,10 +67,6 @@ func ToHex(data []byte) string {
 	return hex.EncodeToString(data)
 }
 
-func toBase64(data []byte) string {
-	return base64.StdEncoding.EncodeToString(data)
-}
-
 // CycledSplit splits the bytes into
 func CycledSplit(data []byte, n int) [][]byte {
 	rows := make([][]byte, n)
@@ -99,4 +95,15 @@ func Pad(data []byte, padding byte, blockSize int) []byte {
 // PadPkcs7 adds PKCS#7 padding
 func PadPkcs7(data []byte, blockSize int) []byte {
 	return Pad(data, byte(4), blockSize)
+}
+
+// StripPkcs7 strips padding and returns a new slice
+func StripPkcs7(data []byte) []byte {
+	i := len(data)
+	for i > 0 && data[i-1] == byte(4) {
+		i--
+	}
+	stripped := make([]byte, i)
+	copy(stripped, data[0:i])
+	return stripped
 }
