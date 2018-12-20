@@ -3,6 +3,8 @@ package cryptopals
 import (
 	"crypto/aes"
 
+	"github.com/esturcke/cryptopals-golang/crypt"
+
 	"github.com/esturcke/cryptopals-golang/bytes"
 )
 
@@ -30,10 +32,6 @@ func solve7() string {
 		panic(error)
 	}
 
-	pt := make([]byte, len(ct))
-	for i := 0; i < len(ct); i += 16 {
-		block.Decrypt(pt[i:i+16], ct[i:i+16])
-	}
-
+	pt := crypt.DecryptEcb(block, ct)
 	return string(bytes.StripPkcs7(pt))
 }

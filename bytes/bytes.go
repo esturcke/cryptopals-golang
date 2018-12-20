@@ -1,6 +1,7 @@
 package bytes
 
 import (
+	"crypto/rand"
 	"encoding/base64"
 	"encoding/hex"
 )
@@ -106,4 +107,25 @@ func StripPkcs7(data []byte) []byte {
 	stripped := make([]byte, i)
 	copy(stripped, data[0:i])
 	return stripped
+}
+
+// Random bytes
+func Random(n int) []byte {
+	bytes := make([]byte, n)
+	rand.Read(bytes)
+	return bytes
+}
+
+// Join a bunch of byte slices without mutating
+func Join(slices ...[]byte) []byte {
+	var length int
+	for _, s := range slices {
+		length += len(s)
+	}
+	joined := make([]byte, length)
+	var i int
+	for _, s := range slices {
+		i += copy(joined[i:], s)
+	}
+	return joined
 }
