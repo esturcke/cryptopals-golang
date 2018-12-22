@@ -5,6 +5,7 @@ import (
 
 	"github.com/esturcke/cryptopals-golang/bytes"
 	"github.com/esturcke/cryptopals-golang/crack"
+	"github.com/esturcke/cryptopals-golang/io"
 )
 
 /*
@@ -20,7 +21,7 @@ Decrypt it.
 
 */
 func solve6() string {
-	ct := bytes.FromBase64(string(readFile("data/6.txt")))
+	ct := bytes.FromBase64(string(io.Read("data/6.txt")))
 	keyLength := guessKeyLength(ct)
 
 	// construct the key

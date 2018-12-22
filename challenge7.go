@@ -4,6 +4,7 @@ import (
 	"crypto/aes"
 
 	"github.com/esturcke/cryptopals-golang/crypt"
+	"github.com/esturcke/cryptopals-golang/io"
 
 	"github.com/esturcke/cryptopals-golang/bytes"
 )
@@ -26,7 +27,7 @@ Easiest way: use OpenSSL::Cipher and give it AES-128-ECB as the cipher.
 
 */
 func solve7() string {
-	ct := bytes.FromBase64(string(readFile("data/7.txt")))
+	ct := bytes.FromBase64(string(io.Read("data/7.txt")))
 	block, error := aes.NewCipher([]byte("YELLOW SUBMARINE"))
 	if error != nil {
 		panic(error)

@@ -3,11 +3,14 @@ package cryptopals
 import (
 	"github.com/esturcke/cryptopals-golang/challenge10"
 	"github.com/esturcke/cryptopals-golang/challenge11"
+	"github.com/esturcke/cryptopals-golang/challenge12"
 	"github.com/esturcke/cryptopals-golang/challenge8"
 	"github.com/esturcke/cryptopals-golang/challenge9"
+	"github.com/esturcke/cryptopals-golang/io"
 )
 
-var vanilla = string(readFile("data/play-that-funky-music.txt"))
+var vanilla = string(io.Read(("data/play-that-funky-music.txt")))
+var moreVanilla = string(io.Read("data/ice-ice-baby.txt"))
 
 // Challenge solver and solutions
 type Challenge struct {
@@ -29,4 +32,5 @@ var Challenges = []Challenge{
 	{9, challenge9.Solve, "YELLOW SUBMARINE" + string([]byte{4, 4, 4, 4})},
 	{10, challenge10.Solve, vanilla},
 	{11, challenge11.Solve, "guessed it"},
+	{12, challenge12.Solve, moreVanilla},
 }
