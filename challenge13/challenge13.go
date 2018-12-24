@@ -1,5 +1,7 @@
 package challenge13
 
+import "strings"
+
 /*Solve challenge 13
 
 ECB cut-and-paste
@@ -48,6 +50,26 @@ Using only the user input to profile_for() (as an oracle to generate "valid" cip
 */
 func Solve() string {
 	return "xxx"
+}
+
+func decode(s string) map[string]string {
+	object := make(map[string]string)
+	for _, substring := range strings.Split(s, "&") {
+		keyValue := strings.Split(substring, "=")
+		if len(keyValue) != 2 {
+			panic("Invalid string")
+		}
+		object[keyValue[0]] = keyValue[1]
+	}
+	return object
+}
+
+func encode(object map[string]string) string {
+	keyValues := make([]string, 0, len(object))
+	for key, value := range object {
+		keyValues = append(keyValues, key+"="+value)
+	}
+	return strings.Join(keyValues, "&")
 }
 
 /*
