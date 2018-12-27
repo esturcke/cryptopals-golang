@@ -1,6 +1,13 @@
 package challenge13
 
-import "strings"
+import (
+	"crypto/aes"
+	"fmt"
+	"strings"
+
+	"github.com/esturcke/cryptopals-golang/bytes"
+	"github.com/esturcke/cryptopals-golang/crypt"
+)
 
 /*Solve challenge 13
 
@@ -49,10 +56,27 @@ Using only the user input to profile_for() (as an oracle to generate "valid" cip
 
 */
 func Solve() string {
-	return "xxx"
+	// Get the ct for a user profile, with "user" in a block by itself
+	ctUser := encryptedProfile("a@example.com")
+
+	// Chop the "user" off
+	ctUser = ctUser[:len(ctUser)-16]
+
+	// Figure out what the ct for "admin" should be
+	ctRole := encryptedProfile("<-buffer->" + "admin" + string([]byte{4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4}))
+
+	// Keep only the admin block (2nd block)
+	ctRole = ctRole[16:32]
+
+	// Join the user and role
+	ct := append(ctUser, ctRole...)
+
+	// Return the role
+	return decode(string(decrypt(ct)))["role"]
 }
 
 func decode(s string) map[string]string {
+	println(s)
 	object := make(map[string]string)
 	for _, substring := range strings.Split(s, "&") {
 		keyValue := strings.Split(substring, "=")
@@ -64,77 +88,24 @@ func decode(s string) map[string]string {
 	return object
 }
 
-func encode(object map[string]string) string {
-	keyValues := make([]string, 0, len(object))
-	for key, value := range object {
-		keyValues = append(keyValues, key+"="+value)
-	}
-	return strings.Join(keyValues, "&")
+func profileFor(email string) string {
+	return fmt.Sprintf("email=%s&uid=10&role=user", sanitizeEmail(email))
 }
 
-/*
-func Solve() string {
-	// 1. Get block size
-	blockSize := findBlockSize()
-
-	// 2. Detect ECB
-	ct := encryptionOracle(make([]byte, blockSize*2))
-	if !bytes.Match(ct[:blockSize], ct[blockSize:2*blockSize]) {
-		panic("Not ECB!")
-	}
-
-	// 3-6. Decrypt
-
-	// Find the length of the secret plus padding
-	secretLength := len(encryptionOracle([]byte{}))
-	secretMessage := make([]byte, secretLength)
-
-	// The secretLength should be a multiple of the block size
-	if secretLength%blockSize != 0 {
-		panic("Secret is not a multiple of the block size")
-	}
-
-	// Put the first unknown byte of the secret at the
-	// end of a block to get a target for the block, then loop through all
-	// characters to find the match
-	for i := range secretMessage {
-		offsetLength := blockSize - 1 - i%blockSize // cycled from blockSize - 1 to 0
-		offset := make([]byte, offsetLength)
-		block := i / blockSize // block we want to discover the last byte of
-		target := encryptionOracle(offset)[block*blockSize : (block+1)*blockSize]
-
-		// Look for the first unknown byte, placed at the last place in a block
-		for c := 0; c < 256; c++ {
-			message := bytes.Join(offset, secretMessage[:i], []byte{byte(c)}) // join block alignment offset with what we know and then next guess
-			block := (offsetLength + i) / blockSize
-			guess := encryptionOracle(message)[block*blockSize : (block+1)*blockSize]
-			if bytes.Match(target, guess) {
-				secretMessage[i] = byte(c)
-				break
-			}
-		}
-	}
-
-	return string(bytes.StripPkcs7(secretMessage))
-}
-
-func findBlockSize() int {
-	length1 := len(encryptionOracle([]byte{}))
-	length2 := length1
-
-	// Find jump in length
-	for i := 0; length2 == length1; i++ {
-		length2 = len(encryptionOracle(make([]byte, i)))
-	}
-	return length2 - length1
+func sanitizeEmail(email string) string {
+	return strings.Replace(strings.Replace(email, "&", "", -1), "=", "", -1)
 }
 
 var block, _ = aes.NewCipher(bytes.Random(16))
 
-func encryptionOracle(pt []byte) []byte {
-	suffix := bytes.FromBase64("Um9sbGluJyBpbiBteSA1LjAKV2l0aCBteSByYWctdG9wIGRvd24gc28gbXkgaGFpciBjYW4gYmxvdwpUaGUgZ2lybGllcyBvbiBzdGFuZGJ5IHdhdmluZyBqdXN0IHRvIHNheSBoaQpEaWQgeW91IHN0b3A/IE5vLCBJIGp1c3QgZHJvdmUgYnkK")
-	pt = bytes.Join(pt, suffix)
+func encrypt(pt []byte) []byte {
 	return crypt.EncryptEcb(block, bytes.PadPkcs7(pt, block.BlockSize()))
 }
 
-*/
+func decrypt(ct []byte) []byte {
+	return bytes.StripPkcs7(crypt.DecryptEcb(block, ct))
+}
+
+func encryptedProfile(email string) []byte {
+	return encrypt([]byte(profileFor(email)))
+}

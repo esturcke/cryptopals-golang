@@ -142,3 +142,16 @@ func Match(a, b []byte) bool {
 	}
 	return true
 }
+
+// ReplaceByte replace matching bytes
+func ReplaceByte(a []byte, replace, with byte) []byte {
+	replaced := make([]byte, len(a))
+	for i := range a {
+		if a[i] == replace {
+			replaced[i] = with
+		} else {
+			replaced[i] = a[i]
+		}
+	}
+	return replaced
+}
