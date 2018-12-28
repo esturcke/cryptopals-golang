@@ -76,7 +76,6 @@ func Solve() string {
 }
 
 func decode(s string) map[string]string {
-	println(s)
 	object := make(map[string]string)
 	for _, substring := range strings.Split(s, "&") {
 		keyValue := strings.Split(substring, "=")
