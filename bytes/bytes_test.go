@@ -44,3 +44,42 @@ func TestCycledSplit(t *testing.T) {
 		})
 	}
 }
+
+func TestPadPkcs7(t *testing.T) {
+	var tests = []struct {
+		data      []byte
+		blockSize int
+		want      []byte
+	}{
+		{[]byte{1, 2, 3, 4}, 8, []byte{1, 2, 3, 4, 4, 4, 4, 4}},
+		{[]byte{}, 8, []byte{8, 8, 8, 8, 8, 8, 8, 8}},
+		{[]byte{1, 2, 3, 4, 5, 6, 7, 8}, 8, []byte{1, 2, 3, 4, 5, 6, 7, 8, 8, 8, 8, 8, 8, 8, 8, 8}},
+	}
+
+	for _, test := range tests {
+		t.Run(fmt.Sprintf("Pkcs#7 of %v", test.data), func(t *testing.T) {
+			if got, want := PadPkcs7(test.data, test.blockSize), test.want; !reflect.DeepEqual(got, want) {
+				t.Errorf("Expected %v, but got %v", want, got)
+			}
+		})
+	}
+}
+
+func TestStripPkcs7(t *testing.T) {
+	var tests = []struct {
+		data []byte
+		want []byte
+	}{
+		{[]byte{1, 2, 3, 4, 4, 4, 4, 4}, []byte{1, 2, 3, 4}},
+		{[]byte{8, 8, 8, 8, 8, 8, 8, 8}, []byte{}},
+		{[]byte{1, 2, 3, 4, 5, 6, 7, 8, 8, 8, 8, 8, 8, 8, 8, 8}, []byte{1, 2, 3, 4, 5, 6, 7, 8}},
+	}
+
+	for _, test := range tests {
+		t.Run(fmt.Sprintf("Pkcs#7 of %v", test.data), func(t *testing.T) {
+			if got, want := StripPkcs7(test.data), test.want; !reflect.DeepEqual(got, want) {
+				t.Errorf("Expected %v, but got %v", want, got)
+			}
+		})
+	}
+}

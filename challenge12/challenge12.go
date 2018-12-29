@@ -76,13 +76,15 @@ func Solve() string {
 			block := (offsetLength + i) / blockSize
 			guess := encryptionOracle(message)[block*blockSize : (block+1)*blockSize]
 			if bytes.Match(target, guess) {
-				secretMessage[i] = byte(c)
+				if c > 1 { // Once we hit a 1 we hit the padding
+					secretMessage[i] = byte(c)
+				}
 				break
 			}
 		}
 	}
 
-	return string(bytes.StripPkcs7(secretMessage))
+	return string(bytes.StripByte(secretMessage, 0))
 }
 
 func findBlockSize() int {

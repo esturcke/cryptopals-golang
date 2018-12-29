@@ -81,8 +81,7 @@ func CycledSplit(data []byte, n int) [][]byte {
 }
 
 // Pad adds padding returning a new slice
-func Pad(data []byte, padding byte, blockSize int) []byte {
-	n := blockSize - len(data)%blockSize
+func Pad(data []byte, padding byte, n int) []byte {
 	padded := make([]byte, len(data)+n)
 	for i, c := range data {
 		padded[i] = c
@@ -95,13 +94,31 @@ func Pad(data []byte, padding byte, blockSize int) []byte {
 
 // PadPkcs7 adds PKCS#7 padding
 func PadPkcs7(data []byte, blockSize int) []byte {
-	return Pad(data, byte(4), blockSize)
+	n := blockSize - len(data)%blockSize
+	return Pad(data, byte(n), n)
 }
 
 // StripPkcs7 strips padding and returns a new slice
 func StripPkcs7(data []byte) []byte {
+	n := data[len(data)-1]
+	for i := 1; i <= int(n); i++ {
+		if data[len(data)-i] != n {
+			panic("Invalid Pkcs#7 padding")
+		}
+	}
 	i := len(data)
 	for i > 0 && data[i-1] == byte(4) {
+		i--
+	}
+	stripped := make([]byte, len(data)-int(n))
+	copy(stripped, data[0:len(data)-int(n)])
+	return stripped
+}
+
+// StripByte strips passed byte from the end
+func StripByte(data []byte, b byte) []byte {
+	i := len(data)
+	for i > 0 && data[i-1] == b {
 		i--
 	}
 	stripped := make([]byte, i)

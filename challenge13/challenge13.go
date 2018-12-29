@@ -63,7 +63,7 @@ func Solve() string {
 	ctUser = ctUser[:len(ctUser)-16]
 
 	// Figure out what the ct for "admin" should be
-	ctRole := encryptedProfile("<-buffer->" + "admin" + string([]byte{4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4}))
+	ctRole := encryptedProfile("<-buffer->" + "admin" + string([]byte{11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11}))
 
 	// Keep only the admin block (2nd block)
 	ctRole = ctRole[16:32]
