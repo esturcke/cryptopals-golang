@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"encoding/hex"
+	"fmt"
 )
 
 // BitCount returns the count of bits in the byte slice
@@ -103,7 +104,7 @@ func StripPkcs7(data []byte) []byte {
 	n := data[len(data)-1]
 	for i := 1; i <= int(n); i++ {
 		if data[len(data)-i] != n {
-			panic("Invalid Pkcs#7 padding")
+			panic(fmt.Sprintf("Invalid Pkcs#7 padding: %v", data))
 		}
 	}
 	i := len(data)

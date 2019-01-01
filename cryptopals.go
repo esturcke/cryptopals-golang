@@ -7,6 +7,7 @@ import (
 	"github.com/esturcke/cryptopals-golang/challenge13"
 	"github.com/esturcke/cryptopals-golang/challenge14"
 	"github.com/esturcke/cryptopals-golang/challenge15"
+	"github.com/esturcke/cryptopals-golang/challenge16"
 	"github.com/esturcke/cryptopals-golang/challenge8"
 	"github.com/esturcke/cryptopals-golang/challenge9"
 	"github.com/esturcke/cryptopals-golang/io"
@@ -39,4 +40,5 @@ var Challenges = []Challenge{
 	{13, challenge13.Solve, "admin"},
 	{14, challenge14.Solve, moreVanilla},
 	{15, challenge15.Solve, "done"},
+	{16, challenge16.Solve, "true"},
 }

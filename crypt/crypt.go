@@ -39,7 +39,7 @@ func EncryptCbc(block cipher.Block, pt, iv []byte) []byte {
 	ct := make([]byte, len(pt))
 	carry := iv
 	for i := 0; i < len(ct); i += blockSize {
-		block.Decrypt(ct[i:i+16], bytes.Xor(pt[i:i+16], carry))
+		block.Encrypt(ct[i:i+16], bytes.Xor(pt[i:i+16], carry))
 		carry = ct[i : i+16]
 	}
 	return ct
