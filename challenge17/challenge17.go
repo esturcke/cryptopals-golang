@@ -2,12 +2,12 @@ package challenge17
 
 import (
 	"crypto/aes"
+	"fmt"
 	"math/rand"
 	"time"
 
-	"github.com/esturcke/cryptopals-golang/crypt"
-
 	"github.com/esturcke/cryptopals-golang/bytes"
+	"github.com/esturcke/cryptopals-golang/crypt"
 )
 
 /*Solve challenge 17
@@ -63,19 +63,67 @@ func Solve() string {
 	rand.Seed(time.Now().UTC().UnixNano())
 	iv, ct, pt := randEncryptedString()
 	if !bytes.Match(decrypt(iv, ct), pt) {
-		panic("poo")
+		panic(fmt.Sprintf("poo\n%v\n%v", decrypt(iv, ct), pt))
 	}
 	return "yay"
 }
 
 func decrypt(iv, ct []byte) []byte {
+	bs := block.BlockSize()
 	pt := make([]byte, len(ct))
+	for i := len(ct); i >= bs; i -= bs {
+		// Sometimes we have multiple match, first pick the first match
+		ptBlock := decryptLastBlock(bytes.Join(iv, ct[:i]), true)
+
+		// If the second to last byte is 2, we probably are decrypting to 16, 15...2, x
+		// In this case, use the last match
+		if ptBlock[bs-2] == 2 {
+			ptBlock = decryptLastBlock(bytes.Join(iv, ct[:i]), false)
+		}
+		copy(pt[i-bs:i], ptBlock)
+	}
+	return pt
+}
+
+func decryptLastBlock(originalIvAndCt []byte, pickFirst bool) []byte {
+	bs := block.BlockSize()
+	pt := make([]byte, bs)
+	ctLen := len(originalIvAndCt)
+	ivAndCt := make([]byte, ctLen)
+	copy(ivAndCt, originalIvAndCt)
+
+	// We manipulate the second to last block (which might be the IV)
+	tamperedCtBlock := ivAndCt[ctLen-2*bs : ctLen-bs]
+	originalCtBlock := originalIvAndCt[ctLen-2*bs : ctLen-bs]
+
+	for i := bs - 1; i >= 0; i-- {
+		// Adjust CT so the resulting PT will be the new padding
+		pad := byte(bs - i)
+		for j := i + 1; j < bs; j++ {
+			tamperedCtBlock[j] = pt[j] ^ originalCtBlock[j] ^ pad
+		}
+
+		// Remember the original
+		originalByte := originalCtBlock[i]
+		pt[i] = pad
+		for c := 0; c < 256; c++ {
+			if byte(c) != originalByte {
+				tamperedCtBlock[i] = byte(c)
+				if isValidPadding(ivAndCt[:bs], ivAndCt[bs:]) {
+					pt[i] = originalByte ^ byte(c) ^ pad
+					if pickFirst {
+						break
+					}
+				}
+			}
+		}
+	}
 	return pt
 }
 
 var block, _ = aes.NewCipher(bytes.Random(16))
 
-func checkPadding(iv, ct []byte) (isValid bool) {
+func isValidPadding(iv, ct []byte) (isValid bool) {
 	isValid = true
 	defer func() {
 		if r := recover(); r != nil {
