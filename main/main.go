@@ -1,7 +1,7 @@
 package main
 
-import "github.com/esturcke/cryptopals-golang/challenge17"
+import "github.com/esturcke/cryptopals-golang/challenge18"
 
 func main() {
-	challenge17.Solve()
+	challenge18.Solve()
 }

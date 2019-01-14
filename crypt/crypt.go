@@ -2,6 +2,7 @@ package crypt
 
 import (
 	"crypto/cipher"
+	"encoding/binary"
 
 	"github.com/esturcke/cryptopals-golang/bytes"
 )
@@ -71,4 +72,53 @@ func EncryptEcb(block cipher.Block, pt []byte) []byte {
 		block.Encrypt(ct[i:i+16], pt[i:i+16])
 	}
 	return ct
+}
+
+// EncryptCtr encrypt using CTR
+func EncryptCtr(block cipher.Block, pt, nonce []byte) []byte {
+	blockSize := block.BlockSize()
+	if blockSize != len(nonce)+8 {
+		panic("Nonce expected leave room for 8 byte counter")
+	}
+
+	ct := make([]byte, len(pt))
+	for i := 0; i < len(ct); i += blockSize {
+		key := make([]byte, blockSize)
+		counter := bytes.Join(nonce, getCrtCount(i/blockSize))
+		block.Encrypt(key, counter)
+		n := min(blockSize, len(pt)-i)
+		copy(ct[i:i+n], bytes.Xor(key[:n], pt[i:i+n]))
+	}
+	return ct
+}
+
+// DecryptCtr decrypt using CTR
+func DecryptCtr(block cipher.Block, ct, nonce []byte) []byte {
+	blockSize := block.BlockSize()
+	if blockSize != len(nonce)+8 {
+		panic("Nonce expected leave room for 8 byte counter")
+	}
+
+	pt := make([]byte, len(ct))
+	for i := 0; i < len(pt); i += blockSize {
+		key := make([]byte, blockSize)
+		counter := bytes.Join(nonce, getCrtCount(i/blockSize))
+		block.Encrypt(key, counter)
+		n := min(blockSize, len(ct)-i)
+		copy(pt[i:i+n], bytes.Xor(key[:n], ct[i:i+n]))
+	}
+	return pt
+}
+
+func getCrtCount(block int) []byte {
+	count := make([]byte, 8)
+	binary.LittleEndian.PutUint64(count, uint64(block))
+	return count
+}
+
+func min(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
 }
