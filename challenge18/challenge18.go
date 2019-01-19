@@ -11,6 +11,8 @@ import (
 
 Implement CTR, the stream cipher mode
 
+See https://cryptopals.com/sets/3/challenges/18
+
 The string:
 
 	L77na/nrFsKvynd6HzOoG7GHTLXsTVu9qvY/2syLXzhPweyyMTJULu/6/kXX0KSvoOLSFQ==
